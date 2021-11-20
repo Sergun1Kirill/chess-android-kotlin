@@ -3,21 +3,22 @@ package com.sergun.chess
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
+import android.view.MotionEvent
 
 import android.view.View
-import java.lang.Float.min
 import kotlin.math.min
 
 
 class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
-    private final val scaleFactor = .9f
-    private final var originX = 20f
-    private final var originY = 200f
-    private final var cellSide = 130f
-    private final val lightColor = Color.parseColor("#EEEEEE")
-    private final val darkColor = Color.parseColor("#BBBBBB")
+    private val scaleFactor = .9f
+    private var originX = 20f
+    private var originY = 200f
+    private var cellSide = 130f
+    private val lightColor = Color.parseColor("#EEEEEE")
+    private val darkColor = Color.parseColor("#BBBBBB")
 
-    private final val imgResIds = setOf(
+    private val imgResIds = setOf(
         R.drawable.bishop_black,
         R.drawable.bishop_white,
         R.drawable.king_black,
@@ -31,8 +32,8 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
         R.drawable.pawn_black,
         R.drawable.pawn_white,
     )
-    private final val bitMaps = mutableMapOf<Int, Bitmap>()
-    private final val paint = Paint()
+    private val bitMaps = mutableMapOf<Int, Bitmap>()
+    private val paint = Paint()
 
     var chessDelegate: ChessDelegate? = null
 
@@ -43,15 +44,36 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     override fun onDraw(canvas: Canvas?) {
         canvas ?: return
 
-        val chessBoarSide = min(canvas.width, canvas.height) * scaleFactor
+        val chessBoarSide = min(width, height) * scaleFactor
         cellSide = chessBoarSide / 8f
-        originX = (canvas.width - chessBoarSide) / 2f
-        originY = (canvas.height - chessBoarSide) / 2f
+        originX = (width - chessBoarSide) / 2f
+        originY = (height - chessBoarSide) / 2f
 
         drawChessBoard(canvas)
         drawPieces(canvas)
 
       }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        event ?: return false
+        when (event.action){
+            MotionEvent.ACTION_DOWN -> {
+                val col = ((event.x - originX) / cellSide).toInt()
+                val row = 7 - ((event.y - originY) / cellSide).toInt()
+                Log.d(TAG, "down at ($col, $row)")
+
+            }
+            MotionEvent.ACTION_MOVE -> {
+//                Log.d(TAG, "move")
+            }
+            MotionEvent.ACTION_UP -> {
+                val col = ((event.x - originX) / cellSide).toInt()
+                val row = 7 - ((event.y - originY) / cellSide).toInt()
+                Log.d(TAG, "up at ($col, $row)")
+            }
+        }
+        return true
+    }
     private fun drawPieces(canvas: Canvas) {
         for(row in 0..7){
             for(col in 0..7){
@@ -62,7 +84,7 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
 
     private fun drawPieceAt(canvas: Canvas,col: Int, row: Int, resID: Int){
         val bitmap = bitMaps[resID]!!
-        canvas.drawBitmap(bitmap, null, RectF(originX + col * cellSide , originY + (7 - row) * cellSide, (col + 1) * cellSide + cellSide/2,originY + ((7 - row) + 1) * cellSide ), paint)
+        canvas.drawBitmap(bitmap, null, RectF(originX + col * cellSide , originY + (7 - row) * cellSide, originX + (col + 1) * cellSide ,originY + ((7 - row) + 1) * cellSide ), paint)
     }
 
     private fun loadBitmaps() {
