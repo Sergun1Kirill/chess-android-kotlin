@@ -1,6 +1,5 @@
 package com.sergun.chess
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
@@ -11,6 +10,8 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     private final val originX = 20f
     private final val originY = 200f
     private final val cellSide = 130f
+    private final val lightColor = Color.parseColor("#EEEEEE")
+    private final val darkColor = Color.parseColor("#BBBBBB")
 
     private final val imgResIds = setOf(
         R.drawable.bishop_black,
@@ -35,11 +36,24 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     // Рисование фигуры
     override fun onDraw(canvas: Canvas?) {
         drawChessBoard(canvas)
+        drawPieces(canvas)
+      }
+    private fun drawPieces(canvas: Canvas?) {
+        val chessModel = ChessModel()
+        chessModel.reset()
 
-        val whiteQueenBitmap = bitMaps[R.drawable.queen_black]!!
-        canvas?.drawBitmap(whiteQueenBitmap, null, Rect(0, 0, 600, 600), paint)
+        for(row in 0..7){
+            for(col in 0..7){
+                chessModel.pieceAt(col, row)?.let { drawPieceAt(canvas, col, row, it.resID) }
+            }
+        }
+        }
 
+    private fun drawPieceAt(canvas: Canvas?,col: Int, row: Int, resID: Int){
+        val bitmap = bitMaps[resID]!!
+        canvas?.drawBitmap(bitmap, null, RectF(originX + (col * cellSide) + 10, originY + (7 - row) * cellSide, (col + 1) * cellSide,originY + (7 - row + 1) * cellSide), paint)
     }
+
     private fun loadBitmaps() {
       imgResIds.forEach {
           bitMaps[it] = BitmapFactory.decodeResource(resources, it)
@@ -50,7 +64,7 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     private fun drawChessBoard(canvas: Canvas?) {
         for(i in 0..7) {
             for (j in 0..7) {
-                paint.color = if((i + j) % 2 == 1) Color.DKGRAY else Color.LTGRAY
+                paint.color = if((i + j) % 2 == 1) darkColor else lightColor
                 canvas?.drawRect(
                     originX + i * cellSide,
                     originY + j * cellSide,
