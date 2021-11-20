@@ -46,6 +46,12 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     init {
         loadBitmaps()
     }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        val smaller = min(widthMeasureSpec, heightMeasureSpec)
+        setMeasuredDimension(smaller, smaller)
+    }
     // Рисование фигуры
     override fun onDraw(canvas: Canvas?) {
         canvas ?: return
