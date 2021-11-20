@@ -13,6 +13,7 @@ class ChessModel {
 
     //Движение фигурки
     fun movePiece(fromCol: Int, fromRow: Int, toCol: Int, toRow: Int){
+        if(fromCol == toCol && fromRow == toRow) return
         val movingPiece = pieceAt(fromCol, fromRow) ?: return
 
         pieceAt(toCol, toRow)?.let{
@@ -21,9 +22,8 @@ class ChessModel {
             }
             piecesBox.remove(it)
         }
-
-        movingPiece.col = toCol
-        movingPiece.row = toRow
+        piecesBox.remove(movingPiece)
+        piecesBox.add(ChessPiece(toCol, toRow, movingPiece.player, movingPiece.rank, movingPiece.resID))
 
 
     }
