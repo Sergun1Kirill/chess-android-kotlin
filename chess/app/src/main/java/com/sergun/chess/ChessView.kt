@@ -3,7 +3,7 @@ package com.sergun.chess
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
+
 import android.view.View
 import java.lang.Float.min
 import kotlin.math.min
@@ -42,7 +42,7 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     // Рисование фигуры
     override fun onDraw(canvas: Canvas?) {
         canvas ?: return
-  
+
         val chessBoarSide = min(canvas.width, canvas.height) * scaleFactor
         cellSide = chessBoarSide / 8f
         originX = (canvas.width - chessBoarSide) / 2f

@@ -1,10 +1,34 @@
 package com.sergun.chess
 
+import android.util.Log
+
 class ChessModel {
 
     var piecesBox = mutableSetOf<ChessPiece>()
     init {
         reset()
+
+        //TODO
+        Log.d(TAG, piecesBox.size.toString())
+        movePiece(0,0,1,7)
+        movePiece(1,7,1,4)
+        Log.d(TAG, this.toString())
+        Log.d(TAG, piecesBox.size.toString())
+
+
+
+    }
+    fun movePiece(fromCol: Int, fromRow: Int, toCol: Int, toRow: Int){
+        val movingPiece = pieceAt(fromCol, fromRow) ?: return
+
+        pieceAt(toCol, toRow).let{
+            piecesBox.remove(it)
+        }
+
+        movingPiece.col = toCol
+        movingPiece.row = toRow
+
+
     }
 
     public fun reset(){
