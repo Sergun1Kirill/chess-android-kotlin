@@ -3,13 +3,17 @@ package com.sergun.chess
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
+import java.lang.Float.min
+import kotlin.math.min
 
 
 class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
-    private final val originX = 20f
-    private final val originY = 200f
-    private final val cellSide = 130f
+    private final val scaleFactor = .9f
+    private final var originX = 20f
+    private final var originY = 200f
+    private final var cellSide = 130f
     private final val lightColor = Color.parseColor("#EEEEEE")
     private final val darkColor = Color.parseColor("#BBBBBB")
 
@@ -37,10 +41,18 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     }
     // Рисование фигуры
     override fun onDraw(canvas: Canvas?) {
+        canvas ?: return
+  
+        val chessBoarSide = min(canvas.width, canvas.height) * scaleFactor
+        cellSide = chessBoarSide / 8f
+        originX = (canvas.width - chessBoarSide) / 2f
+        originY = (canvas.height - chessBoarSide) / 2f
+
         drawChessBoard(canvas)
         drawPieces(canvas)
+
       }
-    private fun drawPieces(canvas: Canvas?) {
+    private fun drawPieces(canvas: Canvas) {
         for(row in 0..7){
             for(col in 0..7){
                 chessDelegate?.pieceAt(col, row)?.let { drawPieceAt(canvas, col, row, it.resID) }
@@ -48,9 +60,9 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
         }
         }
 
-    private fun drawPieceAt(canvas: Canvas?,col: Int, row: Int, resID: Int){
+    private fun drawPieceAt(canvas: Canvas,col: Int, row: Int, resID: Int){
         val bitmap = bitMaps[resID]!!
-        canvas?.drawBitmap(bitmap, null, RectF(originX + (col * cellSide) + 15, originY + (7 - row) * cellSide, (col + 1) * cellSide,originY + (7 - row + 1) * cellSide), paint)
+        canvas.drawBitmap(bitmap, null, RectF(originX + col * cellSide , originY + (7 - row) * cellSide, (col + 1) * cellSide + cellSide/2,originY + ((7 - row) + 1) * cellSide ), paint)
     }
 
     private fun loadBitmaps() {
@@ -60,16 +72,16 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
     }
 
     //Отрисовка доски
-    private fun drawChessBoard(canvas: Canvas?) {
+    private fun drawChessBoard(canvas: Canvas) {
         for(row in 0..7) {
             for (col in 0..7) {
                 drawSquareAt(canvas, row, col, (row + col) % 2 == 1)
             }
         }
     }
-    private fun drawSquareAt(canvas: Canvas?, col: Int, row: Int, isDark: Boolean){
+    private fun drawSquareAt(canvas: Canvas, col: Int, row: Int, isDark: Boolean){
         paint.color = if(isDark) darkColor else lightColor
-        canvas?.drawRect(
+        canvas.drawRect(
             originX + col * cellSide,
             originY + row * cellSide,
             originX + (col + 1) * cellSide,
