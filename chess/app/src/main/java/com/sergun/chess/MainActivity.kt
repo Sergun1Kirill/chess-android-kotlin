@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import java.io.PrintWriter
+import java.net.ServerSocket
 import java.net.Socket
 import java.util.*
 import java.util.concurrent.Executors
@@ -12,7 +13,7 @@ import java.util.concurrent.Executors
 const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity(), ChessDelegate {
-
+    private val PORT: Int = 50000
     private var chessModel = ChessModel()
     private lateinit var chessView: ChessView
     private lateinit var printWriter: PrintWriter
@@ -29,29 +30,39 @@ class MainActivity : AppCompatActivity(), ChessDelegate {
             chessView.invalidate()
 
         }
+        /*
+
+        */
         findViewById<Button>(R.id.listen_button).setOnClickListener{
             Log.d(TAG, "Socket server listening on port ...")
-        }
-
-        findViewById<Button>(R.id.connect_button).setOnClickListener{
-            Log.d(TAG, "Socket client connecting to addr:port...")
             Executors.newSingleThreadExecutor().execute{
-                val socket = Socket("192.168.100.7", 50000) //192.168.100.7  IP сервера
-                val scanner = Scanner(socket.getInputStream())
-                printWriter = PrintWriter(socket.getOutputStream(), true)
-                while(scanner.hasNextLine())
-                {
-                   val move : List<Int> = scanner.nextLine().split(",").map { it.toInt() }
-                    runOnUiThread{
-                        movePiece(move[0], move[1], move[2], move[3])
-                    }
-
-                }
-
+                val serverSocket = ServerSocket(PORT)
+                val socket = serverSocket.accept()
+                receiveMove(socket)
             }
         }
 
 
+        findViewById<Button>(R.id.connect_button).setOnClickListener{
+            Log.d(TAG, "Socket client connecting to addr:port...")
+            Executors.newSingleThreadExecutor().execute{
+                val socket = Socket("172.16.3.126", PORT) //  IP сервера
+                receiveMove(socket)
+            }
+        }
+
+
+    }
+    private fun receiveMove(socket: Socket){
+        val scanner = Scanner(socket.getInputStream())
+        printWriter = PrintWriter(socket.getOutputStream(), true)
+        while(scanner.hasNextLine())
+        {
+            val move : List<Int> = scanner.nextLine().split(",").map { it.toInt() }
+            runOnUiThread{
+                movePiece(move[0], move[1], move[2], move[3])
+            }
+        }
     }
 
     override fun pieceAt(col: Int, row: Int): ChessPiece? {
