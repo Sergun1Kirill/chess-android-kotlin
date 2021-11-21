@@ -4,6 +4,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import java.io.PrintWriter
+import java.net.Socket
+import java.util.*
+import java.util.concurrent.Executors
 
 const val TAG = "MainActivity"
 
@@ -24,6 +28,27 @@ class MainActivity : AppCompatActivity(), ChessDelegate {
             chessView.invalidate()
 
         }
+        findViewById<Button>(R.id.listen_button).setOnClickListener{
+            Log.d(TAG, "Socket server listening on port ...")
+        }
+
+        findViewById<Button>(R.id.connect_button).setOnClickListener{
+            Log.d(TAG, "Socket client connecting to addr:port...")
+            Executors.newSingleThreadExecutor().execute{
+                val socket = Socket("192.168.100.7", 50000) //192.168.100.7
+                val scanner = Scanner(socket.getInputStream())
+                val printWriter = PrintWriter(socket.getOutputStream())
+                while(scanner.hasNextLine())
+                {
+                   val move : List<Int> = scanner.nextLine().split(",").map { it.toInt() }
+                    runOnUiThread{
+                        movePiece(move[0], move[1], move[2], move[3])
+                    }
+                }
+            }
+        }
+
+
     }
 
     override fun pieceAt(col: Int, row: Int): ChessPiece? {

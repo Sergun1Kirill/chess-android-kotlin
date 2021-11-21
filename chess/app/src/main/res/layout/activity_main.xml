@@ -5,7 +5,7 @@
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center">
+    android:gravity="center">
 
 
     <com.sergun.chess.ChessView
@@ -17,14 +17,50 @@
         app:layout_constraintTop_toTopOf="parent">
 
     </com.sergun.chess.ChessView>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        tools:ignore="MissingConstraints">
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
         android:id="@+id/reset_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_margin="8dp"
         android:text="@string/reset_button"
+
         app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintTop_toBottomOf="@+id/chess_view"
+        tools:ignore="MissingConstraints" />
+
+    <Button
+        android:id="@+id/connect_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_margin="8dp"
+        android:text="@string/connect_button"
+        app:layout_constraintEnd_toStartOf="@+id/reset_button"
+        app:layout_constraintStart_toEndOf="@+id/listen_button"
+        app:layout_constraintTop_toBottomOf="@+id/chess_view"
+        tools:ignore="MissingConstraints" />
+
+    <Button
+        android:id="@+id/listen_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_margin="8dp"
+        android:text="@string/listen_button"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chess_view" />
+        app:layout_constraintTop_toBottomOf="@+id/chess_view"
+        tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
