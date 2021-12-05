@@ -1,6 +1,6 @@
 package com.sergun.chess
 
-enum class ChessRank {
+enum class Chessman {
     KING,
     QUEEN,
     BISHOP,

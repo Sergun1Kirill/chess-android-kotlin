@@ -1,6 +1,6 @@
 package com.sergun.chess
 
-enum class ChessPlayer {
+enum class Player {
     WHITE,
     BLACK,
 }

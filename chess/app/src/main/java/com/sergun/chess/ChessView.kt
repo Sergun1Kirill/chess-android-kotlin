@@ -73,7 +73,7 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
                 fromCol = ((event.x - originX) / cellSide).toInt()
                 fromRow = 7 - ((event.y - originY) / cellSide).toInt()
 
-                chessDelegate?.pieceAt(fromCol, fromRow)?.let {
+                chessDelegate?.pieceAt(Square(fromCol, fromRow))?.let {
                     movingPiece = it
                     movingPieceBitmap = bitMaps[it.resID]
                 }
@@ -86,50 +86,48 @@ class ChessView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
             MotionEvent.ACTION_UP -> {
                 val col = ((event.x - originX) / cellSide).toInt()
                 val row = 7 - ((event.y - originY) / cellSide).toInt()
-                chessDelegate?.movePiece(fromCol, fromRow, col, row)
+                if(fromCol != col || fromRow != row) {
+                    chessDelegate?.movePiece(Square(fromCol, fromRow), Square(col, row))
+                }
                 movingPieceBitmap = null
                 movingPiece = null
+                invalidate()
 
             }
         }
         return true
     }
     private fun drawPieces(canvas: Canvas) {
-        for(row in 0..7){
-            for(col in 0..7) {
+        for(row in 0 until 8)
+            for(col in 0 until 8)
 
-                chessDelegate?.pieceAt(col, row)?.let {
-                    if(it != movingPiece) {
-                        drawPieceAt(canvas, col, row, it.resID)
+                chessDelegate?.pieceAt(Square(col, row))?.let { piece ->
+                    if(piece != movingPiece) {
+                        drawPieceAt(canvas, col, row, piece.resID)
                     }
                 }
 
-            }
-        }
 
         movingPieceBitmap?.let{
             canvas.drawBitmap(it, null, RectF(movingPieceX - cellSide / 2, movingPieceY - cellSide / 2, movingPieceX + cellSide / 2,movingPieceY + cellSide / 2), paint)
             }
         }
 
-    private fun drawPieceAt(canvas: Canvas,col: Int, row: Int, resID: Int){
-        val bitmap = bitMaps[resID]!!
-        canvas.drawBitmap(bitmap, null, RectF(originX + col * cellSide , originY + (7 - row) * cellSide, originX + (col + 1) * cellSide ,originY + ((7 - row) + 1) * cellSide ), paint)
-    }
+    private fun drawPieceAt(canvas: Canvas,col: Int, row: Int, resID: Int) =
+        canvas.drawBitmap(bitMaps[resID]!!, null, RectF(originX + col * cellSide , originY + (7 - row) * cellSide, originX + (col + 1) * cellSide ,originY + ((7 - row) + 1) * cellSide ), paint)
 
-    private fun loadBitmaps() {
-      imgResIds.forEach {
-          bitMaps[it] = BitmapFactory.decodeResource(resources, it)
+
+    private fun loadBitmaps() =
+      imgResIds.forEach { imgResId ->
+          bitMaps[imgResId] = BitmapFactory.decodeResource(resources, imgResId)
       }
-    }
+
 
     //Отрисовка доски
     private fun drawChessBoard(canvas: Canvas) {
-        for(row in 0..7) {
-            for (col in 0..7) {
+        for(row in 0 until 8)
+            for (col in 0 until 8)
                 drawSquareAt(canvas, row, col, (row + col) % 2 == 1)
-            }
-        }
     }
     private fun drawSquareAt(canvas: Canvas, col: Int, row: Int, isDark: Boolean){
         paint.color = if(isDark) darkColor else lightColor
