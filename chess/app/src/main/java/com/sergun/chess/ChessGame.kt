@@ -153,6 +153,11 @@ object ChessGame {
         }
         return false
     }
+    private fun canQueenMove(from: Square, to: Square): Boolean{
+
+        return canRookMove(from, to) || canBishopMove(from, to)
+
+    }
     private fun isClearDiagonally(from: Square, to: Square): Boolean{
         if(abs(from.col - to.col) != abs(from.row - to.row)) return false
         val gap = abs(from.col - to.col) - 1
@@ -198,6 +203,7 @@ object ChessGame {
             Chessman.KNIGHT -> return canKnightMove(from, to)
             Chessman.ROOK -> return canRookMove(from, to)
             Chessman.BISHOP -> return canBishopMove(from, to)
+            Chessman.QUEEN -> return canQueenMove(from, to)
         }
         return true //
     }
