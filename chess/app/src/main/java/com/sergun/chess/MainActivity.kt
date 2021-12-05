@@ -14,9 +14,10 @@ const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity(), ChessDelegate {
     private val PORT: Int = 50000
+
     private var chessModel = ChessModel()
     private lateinit var chessView: ChessView
-    private lateinit var printWriter: PrintWriter
+    private var printWriter: PrintWriter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,8 +47,8 @@ class MainActivity : AppCompatActivity(), ChessDelegate {
         findViewById<Button>(R.id.connect_button).setOnClickListener{
             Log.d(TAG, "Socket client connecting to addr:port...")
             Executors.newSingleThreadExecutor().execute{
-                val socket = Socket("172.16.3.126", PORT) //  IP сервера
-                receiveMove(socket)
+                val socket = Socket("192.168.100.244", PORT) //  IP сервера
+                     receiveMove(socket)
             }
         }
 
@@ -72,9 +73,11 @@ class MainActivity : AppCompatActivity(), ChessDelegate {
     override fun movePiece(fromCol: Int, fromRow: Int, toCol: Int, toRow: Int) {
         chessModel.movePiece(fromCol, fromRow, toCol, toRow)
         chessView.invalidate()
-        val moveStr = "$fromCol,$fromRow,$toCol,$toRow"
-        Executors.newSingleThreadExecutor().execute {
-        printWriter.println(moveStr)
-    }
+        printWriter?.let{
+            val moveStr = "$fromCol,$fromRow,$toCol,$toRow"
+            Executors.newSingleThreadExecutor().execute {
+                it.println(moveStr)
+            }
+        }
     }
 }
