@@ -135,11 +135,11 @@ object ChessGame {
 
         return  desc
     }
-    fun canKnightMove(from: Square, to: Square): Boolean{
+    private fun canKnightMove(from: Square, to: Square): Boolean{
             return abs(from.col - to.col) == 2 && abs(from.row - to.row) == 1 ||
                     abs(from.col - to.col) == 1 && abs(from.row - to.row) == 2
     }
-    fun canRookMove(from:Square, to: Square): Boolean{
+    private fun canRookMove(from:Square, to: Square): Boolean{
         if(from.col == to.col && isClearVerticallyBetween(from, to) ||
             from.row == to.row && isClearHorizontallyBetween(from, to)){
 
@@ -147,6 +147,25 @@ object ChessGame {
         }
         return false
     }
+    private fun canBishopMove(from: Square, to: Square): Boolean{
+        if(abs(from.col - to.col) == abs(from.row - to.row)){
+            return isClearDiagonally(from, to)
+        }
+        return false
+    }
+    private fun isClearDiagonally(from: Square, to: Square): Boolean{
+        if(abs(from.col - to.col) != abs(from.row - to.row)) return false
+        val gap = abs(from.col - to.col) - 1
+        for(i in 1..gap){
+            val nextCol = if (to.col > from.col) from.col +i else from.col -i
+            val nextRow = if (to.row > from.row) from.row +i else from.row -i
+            if(pieceAt(nextCol, nextRow) != null){
+                return false
+            }
+        }
+        return true
+    }
+
     private fun isClearVerticallyBetween(from: Square, to: Square): Boolean{
         if(from.col != to.col) return false
         val gap = abs(from.row - to.row) - 1
@@ -178,6 +197,7 @@ object ChessGame {
         when(movingPiece.chessman) {
             Chessman.KNIGHT -> return canKnightMove(from, to)
             Chessman.ROOK -> return canRookMove(from, to)
+            Chessman.BISHOP -> return canBishopMove(from, to)
         }
         return true //
     }
